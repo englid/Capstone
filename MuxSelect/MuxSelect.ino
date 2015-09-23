@@ -5,18 +5,14 @@ void setup()
   pinMode(12, OUTPUT);
   pinMode(11, OUTPUT);
   pinMode(10, OUTPUT);
-
-
 }
 
 void loop()
 {
-  
   mux_select(5);
   delay(5000);
   mux_select(7);
   delay(5000);
-
 }
 
 void mux_select(int lane)
