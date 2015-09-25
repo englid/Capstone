@@ -32,3 +32,12 @@ void mux_select(int lane, int mux)
     }
   }
 }
+
+// Select 4 lanes
+void set_muxes(int first, int second, int third, int forth)
+{
+    mux_select(first, 0);
+    mux_select(second, 1);
+    mux_select(third, 2);
+    mux_select(forth, 3);
+}
