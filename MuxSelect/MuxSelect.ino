@@ -1,4 +1,5 @@
-// int pin_map[16] = 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 ,11 , 14, 13, 14, 15, 16;
+// physical to logical map of GPIOs
+int pin_map[16] = 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 ,11 , 14, 13, 14, 15, 16;
 
 // Initialize output GPpins and Serial port for debug
 void setup()
