@@ -1,0 +1,139 @@
+/*
+Test code for resistor network and saline solution
+Needs a few updates, and needs to be formatted for MEGA (pin numbers, etc)
+*/
+
+//setup analog read pins
+int voltage_read_1 = A0;
+int voltage_read_2 = A1;
+
+int enable_0 = 52;
+int enable_1 = 51;
+int enable_2 = 50;
+int enable_3 = 49;
+
+//MUX input codes 
+//0: Positive Current input (i+)
+int current_pos = 0;
+//1: Negative Current input (i-)
+int current_neg = 1;
+//2: Positive Voltage input (v+)
+int voltage_pose = 2;
+//3: Negative Voltage input (v-)
+int voltage_neg = 3;
+
+//Array of Voltage Values
+float voltage_readings[8][5];
+
+
+void setup()
+{
+  //set up output pins
+  Serial.begin(9600);
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(10, OUTPUT);
+
+  //set up default values
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(12, LOW);
+  digitalWrite(13, LOW);
+
+  //disable all MUXs
+  digitalWrite(enable_0, HIGH);
+  digitalWrite(enable_1, HIGH);
+  digitalWrite(enable_2, HIGH);
+  digitalWrite(enable_3, HIGH);
+  
+  //set intial positions of all 4 multiplexers
+  mux_write(voltage_neg, 3);
+  mux_write(voltage_pos, 2);
+  mux_write(current_neg, 1);
+  mux_write(current_pos, 1);
+
+  //disable all MUXs
+  digitalWrite(enable_0, LOW);
+  digitalWrite(enable_1, LOW);
+  digitalWrite(enable_2, LOW);
+  digitalWrite(enable_3, LOW);
+}
+
+void loop()
+{
+  //loop for setting MUXs and reading voltages
+  for (int i = 0; i < 8; i++) {
+  	  //temp voltage position values to save original positions
+      int temp_volt_pos = voltage_pos;
+      int temp_volt_neg = voltage_neg;
+      
+      for (int j = 0; j < 5; j++) {
+      //take voltage readings
+      float voltage1 = voltageRead(voltage_read_1);
+      float voltage2 = voltageRead(voltage_read_2);
+      //store voltage readings
+      voltage_readings[i][j] = voltage_diff(voltage1, voltage2);
+      //increment voltage measurement position
+      temp_volt_neg += 1;
+      //check if it reached full circle
+      if (temp_volt_neg == 8)
+        temp_volt_neg = 0;
+      temp_volt_pos += 1;
+      if (temp_volt_pos == 8)
+        temp_volt_pos = 0;
+      //change select line for voltage measurement position
+      mux_select(temp_volt_neg, 3);
+      mux_select(temp_volt_pos, 2);     
+    }
+    voltage_neg +=1;
+    voltage_pos +=1;
+    current_neg +=1;
+    current_pos +=1;
+    mux_write(voltage_neg, 3);
+  	mux_write(voltage_pos, 2);
+  	mux_write(current_neg, 1);
+  	mux_write(current_pos, 1);
+    delay(3000);
+  }
+}
+
+
+void mux_select(int lane, int input_code)
+{
+  //function for choosing select line on the MUX
+  //int input - lane is converted to binary
+  //binary values control digital outputs
+  int x;
+  int bit_value;
+  int out = 10;
+  for(x = 0; x < 4; x++) {
+    bit_value = bitRead(lane,x);
+    Serial.println(bit_value);
+    if(bit_value == 1)
+      digitalWrite(10+x, HIGH);
+    else
+      digitalWrite(10+x, LOW);
+    delay(10);
+  }
+}
+
+float voltageRead(int read_pin)
+{
+  //Read input analog pin
+  int sensorvalue = analogRead(read_pin);
+  //convert to floating point voltage value
+  float voltage = sensorvalue * (5.0/1023.0);
+  //return this value
+  return voltage;
+}
+
+float voltage_diff(float value1, float value2)
+{
+  //complete voltage values across resistor
+  float voltage_value = abs(value1 - value2);
+  //return this value
+  return voltage_value;
+}
+
+
