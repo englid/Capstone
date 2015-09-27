@@ -38,19 +38,19 @@ void loop()
       int temp_volt_neg = voltage_neg;
       
       for (int j = 0; j < 5; j++) {
-      //take voltage readings
-      float voltage1 = voltageRead(voltage_read_1);
-      float voltage2 = voltageRead(voltage_read_2);
-      //store voltage readings
-      voltage_readings[i][j] = voltage_diff(voltage1, voltage2);
-      //increment voltage measurement positpinn
-      temp_volt_neg += 1;
-      //check if it reached full circle
-      if (temp_volt_neg == 8)
-        temp_volt_neg = 0;
-      temp_volt_pos += 1;
-      if (temp_volt_pos == 8)
-        temp_volt_pos = 0;
+        //take voltage readings
+        float voltage1 = voltageRead(voltage_read_1);
+        float voltage2 = voltageRead(voltage_read_2);
+        //store voltage readings
+        voltage_readings[i][j] = voltage_diff(voltage1, voltage2);
+        //increment voltage measurement positpinn
+        temp_volt_neg += 1;
+        //check if it reached full circle
+        if (temp_volt_neg == 8)
+          temp_volt_neg = 0;
+        temp_volt_pos += 1;
+        if (temp_volt_pos == 8)
+          temp_volt_pos = 0;
       //change select line for voltage measurement positpinn
       mux_select(temp_volt_neg, 3);
       mux_select(temp_volt_pos, 2);     
@@ -59,6 +59,16 @@ void loop()
     voltage_pos +=1;
     current_neg +=1;
     current_pos +=1;
+    //check if any have reached top of circle
+    if (voltage_neg == 8)
+          voltage_neg = 0;
+    if (voltage_pos == 8)
+          voltage_pos = 0;
+    if (current_neg == 8)
+          current_neg = 0;
+    if (current_pos == 8)
+          current_pos = 0;
+    
     set_muxes(current_pos, current_neg, voltage_pos, voltage_neg);
     delay(3000);
 }
