@@ -68,44 +68,50 @@ void loop()
   for (int i = 0; i < 8; i++) {
     int temp_volt_pos = voltage_pos;
     int temp_volt_neg = voltage_neg;
-    
+
     for (int j = 0; j < 5; j++) {
-      //take voltage readings
+      // take voltage readings
       float voltage1 = voltageRead(voltage_read_1);
       float voltage2 = voltageRead(voltage_read_2);
-      //store voltage readings
-      voltage_readings[i][j] = voltage_diff(voltage1, voltage2);
-      //increment voltage measurement positpinn
+
+      // store voltage readings
+      voltage_readings[i][j] = abs(voltage1, voltage2);
+
+      // increment voltage measurement position
       temp_volt_neg += 1;
-      //check if it reached full circle
+
+      // check if it reached full circle
       if (temp_volt_neg == 8)
         temp_volt_neg = 0;
       temp_volt_pos += 1;
       if (temp_volt_pos == 8)
         temp_volt_pos = 0;
-      //change select line for voltage measurement positpinn
+
+      // select next pair to read voltages
       mux_select(temp_volt_neg, 0);
       mux_select(temp_volt_pos, 1);     
+      delay(10);
     }
+
+    // after full measurement cycle, increase all positions by one
+    voltage_neg +=1;
+    voltage_pos +=1;
+    current_neg +=1;
+    current_pos +=1;
+
+    //check if any have reached top of circle
+    if (voltage_neg == 8)
+          voltage_neg = 0;
+    if (voltage_pos == 8)
+          voltage_pos = 0;
+    if (current_neg == 8)
+          current_neg = 0;
+    if (current_pos == 8)
+          current_pos = 0;
+
+    set_muxes(voltage_neg, voltage_pos, current_neg, current_pos);
+    delay(3000);
   }
-
-  voltage_neg +=1;
-  voltage_pos +=1;
-  current_neg +=1;
-  current_pos +=1;
-
-  //check if any have reached top of circle
-  if (voltage_neg == 8)
-        voltage_neg = 0;
-  if (voltage_pos == 8)
-        voltage_pos = 0;
-  if (current_neg == 8)
-        current_neg = 0;
-  if (current_pos == 8)
-        current_pos = 0;
-  
-  set_muxes(voltage_neg, voltage_pos, current_neg, current_pos);
-  delay(3000);
 }
 
 // Activate a mux's lane
@@ -135,18 +141,9 @@ void set_muxes(int first, int second, int third, int forth)
 
 float voltageRead(int read_pin)
 {
-  //Read input analog pin
+  // Read input analog pin
   int sensorvalue = analogRead(read_pin);
-  //convert to floating point voltage value
-  float voltage = sensorvalue * (5.0/1023.0);
-  //return this value
-  return voltage;
-}
 
-float voltage_diff(float value1, float value2)
-{
-  //complete voltage values across resistor
-  float voltage_value = abs(value1 - value2);
-  //return this value
-  return voltage_value;
+  // convert to floating point voltage value
+  return sensorvalue * (5.0/1023.0);
 }
