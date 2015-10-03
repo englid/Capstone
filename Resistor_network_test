@@ -91,8 +91,8 @@ void loop()
       if (temp_volt_pos == 8)
         temp_volt_pos = 0;
       //change select line for voltage measurement positpinn
-      mux_select(temp_volt_neg, 0);
-      mux_select(temp_volt_pos, 1);     
+      mux_select(temp_volt_neg, 3);
+      mux_select(temp_volt_pos, 2);     
     }
   
 
@@ -114,6 +114,7 @@ void loop()
   
   set_muxes(voltage_neg, voltage_pos, current_neg, current_pos);
   }
+  
   for (int k = 0; k < 8; k++) {
     for (int l = 0; l < 5; l++) {
       Serial.println(voltage_readings[k][l],5);
@@ -149,10 +150,10 @@ void mux_select(int lane, int mux)
 // Select 4 lanes
 void set_muxes(int first, int second, int third, int forth)
 {
-    mux_select(first, 0);
-    mux_select(second, 1);
-    mux_select(third, 2);
-    mux_select(forth, 3);
+    mux_select(first, 3);
+    mux_select(second, 2);
+    mux_select(third, 1);
+    mux_select(forth, 0);
 }
 
 float voltageRead(int read_pin)
